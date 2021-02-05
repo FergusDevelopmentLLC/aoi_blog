@@ -18,3 +18,7 @@ https://www.census.gov/newsroom/blogs/random-samplings/2015/03/understanding-pop
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
 
 https://levelup.gitconnected.com/finding-the-shortest-path-in-javascript-pt-1-breadth-first-search-67ae4653dbec
+
+https://dba.stackexchange.com/questions/56840/can-i-provide-a-default-for-a-left-outer-join
+
+https://www.postgresql.org/docs/9.1/sql-selectinto.html
