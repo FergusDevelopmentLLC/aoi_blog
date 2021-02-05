@@ -16,3 +16,5 @@ https://www.dofactory.com/javascript/design-patterns/singleton
 https://www.census.gov/newsroom/blogs/random-samplings/2015/03/understanding-population-density.html
 
 https://www.postgresqltutorial.com/import-csv-file-into-posgresql-table/
+
+https://levelup.gitconnected.com/finding-the-shortest-path-in-javascript-pt-1-breadth-first-search-67ae4653dbec
