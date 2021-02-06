@@ -22,3 +22,5 @@ https://levelup.gitconnected.com/finding-the-shortest-path-in-javascript-pt-1-br
 https://dba.stackexchange.com/questions/56840/can-i-provide-a-default-for-a-left-outer-join
 
 https://www.postgresql.org/docs/9.1/sql-selectinto.html
+
+https://gis.stackexchange.com/questions/20191/adding-basemaps-from-google-or-bing-in-qgis/217670#217670
