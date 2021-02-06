@@ -4,8 +4,11 @@ https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-
 
 https://www.census.gov/cgi-bin/geo/shapefiles/index.php?year=2019&layergroup=Places
 
-population data
+place population data
 https://www.census.gov/content/census/en/data/datasets/time-series/demo/popest/2010s-total-cities-and-towns.html#ds
+
+county population data
+https://www.census.gov/data/tables/time-series/demo/popest/2010s-counties-total.html
 
 what are places?
 https://www2.census.gov/geo/pdfs/reference/GARM/Ch9GARM.pdf
@@ -24,5 +27,8 @@ https://dba.stackexchange.com/questions/56840/can-i-provide-a-default-for-a-left
 https://www.postgresql.org/docs/9.1/sql-selectinto.html
 
 https://gis.stackexchange.com/questions/20191/adding-basemaps-from-google-or-bing-in-qgis/217670#217670
+
+https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html
+
 
 In an attempt to stand out from the crowd, we could do lightning talks based on our content. Podcast audio where we talk about our experience in casual manner, then second half we do the lightning talks? 1 hour "show".
