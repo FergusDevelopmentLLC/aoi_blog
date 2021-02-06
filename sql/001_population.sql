@@ -95,12 +95,42 @@ SELECT
 FROM geo_places_indiana_pop as places
 LEFT JOIN geo_ah_indiana as hospitals on ST_WITHIN(hospitals.geom, places.geom)--Returns TRUE if hospitals.geom is completely inside places.geom
 GROUP BY places.geom, places.placefp, places.name
-HAVING max(pop_2019) > 5000
+--HAVING max(pop_2019) > 5000
 ORDER BY density_per_hospital DESC;
+
+SELECT 
+  places.geom,
+  places.placefp,
+  places.name, max(area_sq_miles) as sq_miles,
+  max(pop_2019) as pop_2019,
+  count(hospitals.geom) as ah_count,
+  CASE WHEN count(hospitals.geom) = 0 THEN 0 ELSE max(pop_2019) / count(hospitals.geom) END AS persons_per_hospital
+FROM geo_places_indiana_pop as places
+LEFT JOIN geo_ah_indiana as hospitals on ST_WITHIN(hospitals.geom, places.geom)--Returns TRUE if hospitals.geom is completely inside places.geom
+GROUP BY places.geom, places.placefp, places.name
+--HAVING max(pop_2019) > 5000
+ORDER BY persons_per_hospital DESC;
+
+--dollar general
+select * 
+from geo_dollar_general_indiana;
+
+SELECT 
+  places.geom,
+  places.placefp,
+  places.name, 
+  max(area_sq_miles) as sq_miles,
+  max(pop_2019) as pop_2019,
+  count(dollar_generals.geom) as dollar_generals_count,
+  CASE WHEN count(dollar_generals.geom) = 0 THEN 0 ELSE max(pop_2019) / count(dollar_generals.geom) END AS persons_per_dollar_general
+FROM geo_places_indiana_pop as places
+LEFT JOIN geo_dollar_general_indiana as dollar_generals on ST_WITHIN(dollar_generals.geom, places.geom)--Returns TRUE if hospitals.geom is completely inside places.geom
+GROUP BY places.geom, places.placefp, places.name
+--HAVING max(pop_2019) > 5000
+ORDER BY persons_per_dollar_general DESC;
 
 
 -- counties
-
 
 CREATE TABLE indiana_county_population (
   id SERIAL,
@@ -117,15 +147,44 @@ CSV HEADER;
 
 select * from indiana_county_population;
 
+select
+  county.geom,
+  county.name,
+  aland,
+  pop.pop_2019
+from cb_2016_us_county_500k county
+join indiana_county_population pop on pop.name = county.name
+where statefp = '18'
+order by pop_2019 desc;
 
-select * 
-from cb_2016_us_county_500k
-limit 100;
-
-select geom, county.name, aland, pop.pop_2019, CASE WHEN pop.pop_2019 is NULL THEN 0 ELSE pop.pop_2019 / (ALAND * 0.00000038610) END AS pop_density_2019  
+select 
+  county.geom,
+  county.name,
+  max(aland) as aland,
+  max(pop.pop_2019) as pop_2019,
+  count(hospitals.geom) as ah_count,
+  CASE WHEN count(hospitals.geom) = 0 THEN 0 ELSE max(pop.pop_2019) / count(hospitals.geom) END AS persons_per_hospital
 from cb_2016_us_county_500k county
 left join indiana_county_population pop on pop.name = county.name
+left join geo_ah_indiana as hospitals on ST_WITHIN(hospitals.geom, county.geom)--Returns TRUE if hospitals.geom is completely inside county.geom
 where statefp = '18'
-order by pop_density_2019 desc;
+GROUP BY county.geom, county.name
+order by persons_per_hospital desc;
 
+--dollar general
+select * 
+from geo_dollar_general_indiana;
 
+select 
+  county.geom,
+  county.name,
+  max(county.aland) as aland,
+  max(pop.pop_2019) as pop_2019,
+  count(dollar_generals.geom) as dollar_generals_count,
+  CASE WHEN count(dollar_generals.geom) = 0 THEN 0 ELSE max(pop.pop_2019) / count(dollar_generals.geom) END AS persons_per_dollar_general
+from cb_2016_us_county_500k county
+left join indiana_county_population pop on pop.name = county.name
+LEFT JOIN geo_dollar_general_indiana as dollar_generals on ST_WITHIN(dollar_generals.geom, county.geom)--Returns TRUE if dollar_generals.geom is completely inside county.geom
+where county.statefp = '18'
+GROUP BY county.geom, county.name
+order by persons_per_dollar_general desc;
