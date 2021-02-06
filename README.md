@@ -24,3 +24,5 @@ https://dba.stackexchange.com/questions/56840/can-i-provide-a-default-for-a-left
 https://www.postgresql.org/docs/9.1/sql-selectinto.html
 
 https://gis.stackexchange.com/questions/20191/adding-basemaps-from-google-or-bing-in-qgis/217670#217670
+
+In an attempt to stand out from the crowd, we could do lightning talks based on our content. Podcast audio where we talk about our experience in casual manner, then second half we do the lightning talks? 1 hour "show".
