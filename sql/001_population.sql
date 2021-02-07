@@ -188,3 +188,30 @@ LEFT JOIN geo_dollar_general_indiana as dollar_generals on ST_WITHIN(dollar_gene
 where county.statefp = '18'
 GROUP BY county.geom, county.name
 order by persons_per_dollar_general desc;
+
+
+----------------------------------------------------------
+
+-- indiana state
+SELECT 
+  geom,
+  statefp,
+  geoid,
+  stusps,
+  name,
+  aland,
+  awater
+FROM public.geo_state_raw
+where statefp = '18';
+
+-- indiana counties
+SELECT
+  geom, 
+  statefp,
+  countyfp,
+  geoid,
+  name,
+  aland,
+  awater
+ FROM public.geo_county_raw
+ where statefp = '18';
