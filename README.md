@@ -32,3 +32,17 @@ https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-
 
 
 In an attempt to stand out from the crowd, we could do lightning talks based on our content. Podcast audio where we talk about our experience in casual manner, then second half we do the lightning talks? 1 hour "show".
+
+https://vet.purdue.edu/vet-shoppe/
+
+https://www.photopea.com/
+
+https://giphy.com/gifs/jeopardy-alex-trebek-cAbRoMKBExGs8dMPfu/links
+
+https://journeynorth.org/tm/LongitudeIntro.html
+
+https://www.postgresql.org/
+
+https://www.qgis.org/en/site/
+
+https://www.census.gov/
