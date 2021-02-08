@@ -35,162 +35,6 @@ FROM '/tmp/sub-est2019_all.csv'
 DELIMITER ','
 CSV HEADER;
 
-select place, max(name), max(stname) as stname, max(popestimate2019) as pop2019
-from usa_place_population
-where stname = 'Indiana'
-group by place;
-
-select 
-  place,
-  max(stname) as stname, 
-  REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(max(name), ' city', '' ), ' town', ''), ' (balance)', ''),' CDP', ''),' village', ''),' (pt.)','') as name,
-  max(popestimate2019) as pop2019
-from usa_place_population
-where stname = 'Indiana'
-group by place;
-
-select 
-  place,
-  max(stname) as stname, 
-  REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(max(name), ' city', '' ), ' town', ''), ' (balance)', ''),' CDP', ''),' village', ''),' (pt.)','') as name,
-  max(popestimate2019) as pop2019
-INTO indiana_place_population 
-FROM usa_place_population 
-where stname = 'Indiana'
-group by place;
-
-select * from indiana_place_population;
-
--- use qgis to export geo_places_indiana.
-
-select * from geo_places_indiana;
-
--- this is the places polygons, with population and population density
-select 
-  geom, 
-  placefp, 
-  REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(namelsad, ' city', '' ), ' town', ''), ' (balance)', ''),' CDP', ''),' village', ''),' (pt.)','') as name,
-  ROUND(ALAND * 0.00000038610, 2) as area_sq_miles,
-  CASE WHEN pop2019 is NULL THEN 0 ELSE pop2019 END AS pop_2019,
-  CASE WHEN pop2019 is NULL THEN 0 ELSE ROUND(pop2019 / (ALAND * 0.00000038610), 2) END AS pop_density_2019  
-from geo_places_indiana indiana
-left join indiana_place_population place on place.place = indiana.placefp
-order by placefp;
-
--- import that query to create layer in qgis
----becomes geo_places_indiana_pop
-SELECT _uid_, geom, placefp, name, area_sq_miles, pop_2019, pop_density_2019
-FROM public.geo_places_indiana_pop;
-
-select * from geo_ah_indiana;
-ALTER TABLE geo_ah_indiana DROP COLUMN column_name;
-
-SELECT 
-  places.geom,
-  places.placefp,
-  places.name, max(area_sq_miles) as sq_miles, max(pop_2019) as pop_2019,
-  max(pop_density_2019) as pop_density_2019,
-  count(hospitals.geom) as ah_count,
-  CASE WHEN count(hospitals.geom) = 0 THEN 0 ELSE max(pop_density_2019) / count(hospitals.geom) END AS density_per_hospital
-FROM geo_places_indiana_pop as places
-LEFT JOIN geo_ah_indiana as hospitals on ST_WITHIN(hospitals.geom, places.geom)--Returns TRUE if hospitals.geom is completely inside places.geom
-GROUP BY places.geom, places.placefp, places.name
---HAVING max(pop_2019) > 5000
-ORDER BY density_per_hospital DESC;
-
-SELECT 
-  places.geom,
-  places.placefp,
-  places.name, max(area_sq_miles) as sq_miles,
-  max(pop_2019) as pop_2019,
-  count(hospitals.geom) as ah_count,
-  CASE WHEN count(hospitals.geom) = 0 THEN 0 ELSE max(pop_2019) / count(hospitals.geom) END AS persons_per_hospital
-FROM geo_places_indiana_pop as places
-LEFT JOIN geo_ah_indiana as hospitals on ST_WITHIN(hospitals.geom, places.geom)--Returns TRUE if hospitals.geom is completely inside places.geom
-GROUP BY places.geom, places.placefp, places.name
---HAVING max(pop_2019) > 5000
-ORDER BY persons_per_hospital DESC;
-
---dollar general
-select * 
-from geo_dollar_general_indiana;
-
-SELECT 
-  places.geom,
-  places.placefp,
-  places.name, 
-  max(area_sq_miles) as sq_miles,
-  max(pop_2019) as pop_2019,
-  count(dollar_generals.geom) as dollar_generals_count,
-  CASE WHEN count(dollar_generals.geom) = 0 THEN 0 ELSE max(pop_2019) / count(dollar_generals.geom) END AS persons_per_dollar_general
-FROM geo_places_indiana_pop as places
-LEFT JOIN geo_dollar_general_indiana as dollar_generals on ST_WITHIN(dollar_generals.geom, places.geom)--Returns TRUE if hospitals.geom is completely inside places.geom
-GROUP BY places.geom, places.placefp, places.name
---HAVING max(pop_2019) > 5000
-ORDER BY persons_per_dollar_general DESC;
-
-
--- counties
-
-CREATE TABLE indiana_county_population (
-  id SERIAL,
-  state VARCHAR(255),
-  name VARCHAR(255),
-  pop_2019 integer,
-  PRIMARY KEY (id)
-);
-
-COPY indiana_county_population(state, name, pop_2019)
-FROM '/tmp/indiana_county_pop2019.csv'
-DELIMITER ','
-CSV HEADER;
-
-select * from indiana_county_population;
-
-select
-  county.geom,
-  county.name,
-  aland,
-  pop.pop_2019
-from cb_2016_us_county_500k county
-join indiana_county_population pop on pop.name = county.name
-where statefp = '18'
-order by pop_2019 desc;
-
-select 
-  county.geom,
-  county.name,
-  max(aland) as aland,
-  max(pop.pop_2019) as pop_2019,
-  count(hospitals.geom) as ah_count,
-  CASE WHEN count(hospitals.geom) = 0 THEN 0 ELSE max(pop.pop_2019) / count(hospitals.geom) END AS persons_per_hospital
-from cb_2016_us_county_500k county
-left join indiana_county_population pop on pop.name = county.name
-left join geo_ah_indiana as hospitals on ST_WITHIN(hospitals.geom, county.geom)--Returns TRUE if hospitals.geom is completely inside county.geom
-where statefp = '18'
-GROUP BY county.geom, county.name
-order by persons_per_hospital desc;
-
---dollar general
-select * 
-from geo_dollar_general_indiana;
-
-select 
-  county.geom,
-  county.name,
-  max(county.aland) as aland,
-  max(pop.pop_2019) as pop_2019,
-  count(dollar_generals.geom) as dollar_generals_count,
-  CASE WHEN count(dollar_generals.geom) = 0 THEN 0 ELSE max(pop.pop_2019) / count(dollar_generals.geom) END AS persons_per_dollar_general
-from cb_2016_us_county_500k county
-left join indiana_county_population pop on pop.name = county.name
-LEFT JOIN geo_dollar_general_indiana as dollar_generals on ST_WITHIN(dollar_generals.geom, county.geom)--Returns TRUE if dollar_generals.geom is completely inside county.geom
-where county.statefp = '18'
-GROUP BY county.geom, county.name
-order by persons_per_dollar_general desc;
-
-
-----------------------------------------------------------
 
 -- indiana state
 SELECT 
@@ -215,3 +59,24 @@ SELECT
   awater
  FROM public.geo_county_raw
  where statefp = '18';
+
+--indiana county persons per hospital
+select 
+  county.geom,
+  county.name, 
+  max(pop.pop_2019) as pop_2019,
+  count(hospitals.geom) as animal_hospital_count,
+  CASE 
+    WHEN count(hospitals.geom) = 0 
+    THEN max(pop.pop_2019) 
+    ELSE max(pop.pop_2019) / count(hospitals.geom) 
+  END
+  AS persons_per_hospital
+from geo_county_raw county
+left join population_county pop on pop.name = CONCAT(county.name, ' County')
+left join geo_animal_hospitals_usa as hospitals 
+  on ST_WITHIN(ST_Transform(hospitals.geom, 4326), ST_Transform(county.geom, 4326))
+where pop.state_name = 'Indiana'
+and county.statefp = '18'
+group by county.geom, county.name
+order by persons_per_hospital desc;
