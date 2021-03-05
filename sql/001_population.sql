@@ -80,3 +80,14 @@ where pop.state_name = 'Indiana'
 and county.statefp = '18'
 group by county.geom, county.name
 order by persons_per_hospital desc;
+
+
+CREATE TABLE population_county (
+  id SERIAL,
+  statefp VARCHAR(2),
+  state_name VARCHAR(255),
+  name VARCHAR(255),
+  type VARCHAR(100),
+  pop_2019 integer,
+  PRIMARY KEY (id)
+);
